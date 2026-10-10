@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="E-Commerce Dashboard 2024 สรุปยอดขายรายเดือน">
+  <title>E-Commerce Dashboard 2024</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>E-Commerce Dashboard 2024</h1>
+    <p class="subtitle">ภาพรวมผลประกอบการร้านค้าออนไลน์ตลอดปี 2024</p>
+  </header>
+
+  <main class="dashboard">
+    <section class="intro" aria-labelledby="overview-title">
+      <h2 id="overview-title">ภาพรวมผลประกอบการ</h2>
+      <p>สรุปตัวชี้วัดสำคัญจากข้อมูลยอดขายที่ผ่านการทำความสะอาดแล้ว</p>
+    </section>
+
+    <section class="kpis" aria-label="ตัวชี้วัดสำคัญ">
+      <article class="kpi-card">
+        <p class="kpi-label">ยอดขายรวมทั้งปี</p>
+        <p class="kpi-value">฿24.5M</p>
+        <p class="kpi-note">Revenue รวม 24,537,800 บาท</p>
+      </article>
+
+      <article class="kpi-card">
+        <p class="kpi-label">เดือนที่ขายดีที่สุด</p>
+        <p class="kpi-value">Nov</p>
+        <p class="kpi-note">ยอดขายสูงสุด ฿3,643,200</p>
+      </article>
+
+      <article class="kpi-card">
+        <p class="kpi-label">AOV เฉลี่ย</p>
+        <p class="kpi-value">~฿1,285</p>
+        <p class="kpi-note">มูลค่าคำสั่งซื้อเฉลี่ยโดยประมาณ</p>
+      </article>
+    </section>
+
+    <section class="panel chart" aria-labelledby="chart-title">
+      <h2 id="chart-title">ยอดขายรายเดือน</h2>
+      <p>Monthly Revenue · 2024</p>
+      <figure class="chart-figure">
+        <svg id="revenue-chart" viewBox="0 0 600 320" role="img" aria-labelledby="cTitle cDesc">
+          <title id="cTitle">Monthly Revenue 2024</title>
+          <desc id="cDesc">กราฟแท่งยอดขายรายเดือนปี 2024 กำลังโหลดข้อมูล</desc>
+          <g id="chart-layer"></g>
+        </svg>
+        <p id="chart-status" class="chart-status" role="status">กำลังโหลดข้อมูล…</p>
+        <figcaption>ยอดขายพุ่งสูงสุดในเดือนพฤศจิกายนที่ 3.64 ล้านบาท (แท่งสีเหลือง) แกนตั้งเริ่มที่ 0 ไม่ตัดทอนสเกล</figcaption>
+      </figure>
+    </section>
+
+    <section class="panel insights" aria-labelledby="insights-title">
+      <h2 id="insights-title">Key Takeaways</h2>
+      <ul>
+        <li>ยอดขายรวมทั้งปี 24.5 ล้านบาท เฉลี่ยเดือนละประมาณ 2.04 ล้านบาท</li>
+        <li>พฤศจิกายนสูงสุดที่ 3.64 ล้านบาท จากแคมเปญ 11.11 และ Black Friday</li>
+        <li>ยอดขายเดือน พ.ย. สูงกว่าค่าเฉลี่ยรายเดือนประมาณ 1.8 เท่า</li>
+        <li>กุมภาพันธ์ต่ำสุดของปี ควรวางโปรโมชันช่วงนี้เพื่อพยุงยอดขาย</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2024 • 01219482 Data Visualization</p>
+    <p>จัดทำเพื่อการศึกษา</p>
+  </footer>
+
+  <script>
+    // Pass one record per order: { month: "Nov", revenue: 1234 }.
+    function calculateRevenueMetrics(orders) {
+      const monthlyRevenue = new Map();
+      let totalRevenue = 0;
+      let validOrderCount = 0;
+
+      for (const order of orders) {
+        const revenue = Number(order.revenue);
+        if (!order.month || !Number.isFinite(revenue)) continue;
+
+        totalRevenue += revenue;
+        validOrderCount += 1;
+        monthlyRevenue.set(
+          order.month,
+          (monthlyRevenue.get(order.month) || 0) + revenue
+        );
+      }
+
+      let peakMonth = null;
+      let peakRevenue = 0;
+      for (const [month, revenue] of monthlyRevenue) {
+        if (peakMonth === null || revenue > peakRevenue) {
+          peakMonth = month;
+          peakRevenue = revenue;
+        }
+      }
+
+      return {
+        totalRevenue,
+        peakMonth,
+        peakRevenue,
+        averageRevenue: validOrderCount ? totalRevenue / validOrderCount : 0
+      };
+    }
+  </script>
+
+  <script>
+    // Optional: paste 12 records here if you open the file directly (file://)
+    // and fetch() is blocked. Example: [{ month: "Jan", revenue: 1234567 }, ...]
+    const FALLBACK_DATA = [{"month": "Jan", "revenue": 1344000}, {"month": "Feb", "revenue": 1146600}, {"month": "Mar", "revenue": 1513000}, {"month": "Apr", "revenue": 1598200}, {"month": "May", "revenue": 1808500}, {"month": "Jun", "revenue": 1724000}, {"month": "Jul", "revenue": 1915200}, {"month": "Aug", "revenue": 2167200}, {"month": "Sep", "revenue": 2020500}, {"month": "Oct", "revenue": 2469600}, {"month": "Nov", "revenue": 3643200}, {"month": "Dec", "revenue": 3187800}];
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    function svgEl(name, attrs, text) {
+      const node = document.createElementNS(SVG_NS, name);
+      for (const key in attrs) node.setAttribute(key, attrs[key]);
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    // Accepts [{month, revenue}] or Chart.js format {labels:[], datasets:[{data:[]}]}.
+    function parseChartData(json) {
+      let rows = [];
+      if (Array.isArray(json)) {
+        rows = json.map(d => ({
+          month: String(d.month ?? d.label ?? ""),
+          revenue: Number(d.revenue ?? d.value)
+        }));
+      } else if (json && Array.isArray(json.labels) && json.datasets && json.datasets[0]) {
+        rows = json.labels.map((label, i) => ({
+          month: String(label),
+          revenue: Number(json.datasets[0].data[i])
+        }));
+      }
+      return rows.filter(d => d.month && Number.isFinite(d.revenue));
+    }
+
+    function renderBarChart(data) {
+      const svg = document.getElementById("revenue-chart");
+      const layer = document.getElementById("chart-layer");
+      layer.replaceChildren();
+
+      const W = 600, H = 320;
+      const margin = { left: 48, right: 12, top: 28, bottom: 36 };
+      const plotW = W - margin.left - margin.right;
+      const plotH = H - margin.top - margin.bottom;
+      const base = margin.top + plotH;
+
+      const maxValue = Math.max(...data.map(d => d.revenue));
+      const axisMax = Math.ceil(maxValue / 1e6) * 1e6; // Y axis always starts at 0
+      const peakIndex = data.findIndex(d => d.revenue === maxValue);
+      const minValue = Math.min(...data.map(d => d.revenue));
+      const lowIndex = data.findIndex(d => d.revenue === minValue);
+
+      // Grid lines + Y axis labels
+      for (let v = 0; v <= axisMax; v += 1e6) {
+        const y = base - (v / axisMax) * plotH;
+        layer.appendChild(svgEl("line", {
+          x1: margin.left, x2: W - margin.right, y1: y, y2: y,
+          class: v === 0 ? "axis-line" : "grid-line"
+        }));
+        layer.appendChild(svgEl("text", {
+          x: margin.left - 8, y: y + 4, "text-anchor": "end", class: "axis-text"
+        }, v === 0 ? "0" : (v / 1e6) + "M"));
+      }
+
+      // Bars + month labels
+      const band = plotW / data.length;
+      const barW = band * 0.62;
+      data.forEach((d, i) => {
+        const h = (d.revenue / axisMax) * plotH;
+        const x = margin.left + i * band + (band - barW) / 2;
+        const y = base - h;
+        const isPeak = i === peakIndex;
+
+        const rect = svgEl("rect", {
+          x: x.toFixed(1), y: y.toFixed(1),
+          width: barW.toFixed(1), height: h.toFixed(1),
+          class: isPeak ? "bar bar-peak" : "bar"
+        });
+        rect.appendChild(svgEl("title", {}, d.month + ": " + d.revenue.toLocaleString("en-US") + " THB"));
+        layer.appendChild(rect);
+
+        layer.appendChild(svgEl("text", {
+          x: (x + barW / 2).toFixed(1), y: base + 20,
+          "text-anchor": "middle", class: "axis-text"
+        }, d.month.slice(0, 3)));
+
+        if (isPeak) {
+          layer.appendChild(svgEl("text", {
+            x: (x + barW / 2).toFixed(1), y: (y - 8).toFixed(1),
+            "text-anchor": "middle", class: "peak-text"
+          }, (d.revenue / 1e6).toFixed(2) + "M"));
+        }
+      });
+
+      // Accessible description built from the data
+      const fmt = v => (v / 1e6).toFixed(2) + "M";
+      document.getElementById("cDesc").textContent =
+        "กราฟแท่งยอดขายรายเดือนปี 2024 เดือนที่สูงสุดคือ " + data[peakIndex].month +
+        " ที่ " + fmt(maxValue) + " บาท เดือนที่ต่ำสุดคือ " + data[lowIndex].month +
+        " ที่ " + fmt(minValue) + " บาท";
+      document.getElementById("chart-status").hidden = true;
+    }
+
+    function showChartMessage(text) {
+      const status = document.getElementById("chart-status");
+      status.textContent = text;
+      status.hidden = false;
+    }
+
+    async function loadChart() {
+      let data = [];
+      try {
+        const response = await fetch("ecommerce_revenue_chartjs.json");
+        if (!response.ok) throw new Error(response.status);
+        data = parseChartData(await response.json());
+      } catch (err) {
+        if (FALLBACK_DATA) data = parseChartData(FALLBACK_DATA);
+      }
+
+      if (data.length) {
+        renderBarChart(data);
+      } else {
+        showChartMessage("โหลดข้อมูลกราฟไม่ได้ — วางไฟล์ ecommerce_revenue_chartjs.json ไว้โฟลเดอร์เดียวกับ index.html แล้วเปิดผ่าน Live Server หรือใส่ข้อมูลใน FALLBACK_DATA");
+      }
+    }
+
+    loadChart();
+  </script>
+</body>
+</html>
